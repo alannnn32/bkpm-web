@@ -4,7 +4,7 @@ $routes = require_once __DIR__ . '/../routes/web.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-$basePath = '/si-akademik/public';
+$basePath = '/bkpm_web/acara5/si-akademik/public';
 
 if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
