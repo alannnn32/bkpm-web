@@ -1,19 +1,27 @@
+
 <?php
 
 require_once __DIR__ . '/Model.php';
 
 class MahasiswaModel extends Model
 {
+    protected string $table = 'mahasiswa';
+
+    protected array $fillable = [
+        'nim',
+        'nama',
+        'email',
+        'prodi_id',
+        'angkatan',
+        'status'
+    ];
+
+    // Menampilkan mahasiswa beserta nama program studi
     public function all(): array
     {
         $sql = "
             SELECT
-                mahasiswa.id,
-                mahasiswa.nim,
-                mahasiswa.nama,
-                mahasiswa.email,
-                mahasiswa.angkatan,
-                mahasiswa.status,
+                mahasiswa.*,
                 prodi.nama AS nama_prodi
             FROM mahasiswa
             INNER JOIN prodi

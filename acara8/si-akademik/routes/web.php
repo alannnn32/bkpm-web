@@ -1,3 +1,4 @@
+
 <?php
 
 return [
@@ -22,6 +23,36 @@ return [
     '/mahasiswa' => [
         'controller' => 'MahasiswaController',
         'action' => 'index',
+        'middleware' => ['AuthMiddleware']
+    ],
+
+    '/mahasiswa/create' => [
+        'controller' => 'MahasiswaController',
+        'action' => 'create',
+        'middleware' => ['AuthMiddleware']
+    ],
+
+    '/mahasiswa/store' => [
+        'controller' => 'MahasiswaController',
+        'action' => 'store',
+        'middleware' => ['AuthMiddleware']
+    ],
+
+    '/mahasiswa/edit' => [
+        'controller' => 'MahasiswaController',
+        'action' => 'edit',
+        'middleware' => ['AuthMiddleware']
+    ],
+
+    '/mahasiswa/update' => [
+        'controller' => 'MahasiswaController',
+        'action' => 'update',
+        'middleware' => ['AuthMiddleware']
+    ],
+
+    '/mahasiswa/delete' => [
+        'controller' => 'MahasiswaController',
+        'action' => 'destroy',
         'middleware' => ['AuthMiddleware']
     ],
 

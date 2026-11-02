@@ -50,7 +50,7 @@ class AuthController
             'message' => 'Anda telah logout'
         ];
 
-        header('Location: /bkpm_web//si-akademik/public/login');
+        header('Location: /bkpm_web/acara8/si-akademik/public/login');
         exit;
     }
 }
