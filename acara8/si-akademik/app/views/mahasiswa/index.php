@@ -1,96 +1,51 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Mahasiswa - SI Akademik</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Daftar Mahasiswa</h2>
-        <a href="form.php" class="btn btn-primary">
-            + Tambah Mahasiswa
-        </a>
-    </div>
-    <div class="card shadow">
-        <div class="card-body"><?php
 
-require_once __DIR__ . '/../../models/Mahasiswa.php';
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Data Mahasiswa</h2>
 
-$mahasiswa1 = new Mahasiswa(
-    "E41251100",
-    "Napoleon Bonaparte",
-    "Teknik Informatika"
-);
+    <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa/create"
+       class="btn btn-primary">
+        + Tambah Mahasiswa
+    </a>
+</div>
 
-$mahasiswa2 = new Mahasiswa(
-    "E41251101",
-    "Davina Karamoy",
-    "Teknik Informatika"
-);
+<div class="card shadow">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>No</th>
+                        <th>NIM</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Program Studi</th>
+                        <th>Angkatan</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-$mahasiswa3 = new Mahasiswa(
-    "E41251102",
-    "Casey Kaspol",
-    "Sistem Informasi"
-);
-
-$mahasiswa = [
-    $mahasiswa1,
-    $mahasiswa2,
-    $mahasiswa3
-];
-
-include __DIR__ . '/../partials/header.php';
-include __DIR__ . '/../partials/navbar.php';
-
-?>
-
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Data Mahasiswa</h2>
-        <button class="btn btn-primary">
-            + Tambah Mahasiswa
-        </button>
-    </div>
-    <div class="card shadow">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="table-primary">
+                <tbody>
+                    <?php if (!empty($mahasiswa)): ?>
+                        <?php foreach ($mahasiswa as $index => $mhs): ?>
+                            <tr>
+                                <td><?= $index + 1 ?></td>
+                                <td><?= htmlspecialchars($mhs['nim']) ?></td>
+                                <td><?= htmlspecialchars($mhs['nama']) ?></td>
+                                <td><?= htmlspecialchars($mhs['email']) ?></td>
+                                <td><?= htmlspecialchars($mhs['nama_prodi']) ?></td>
+                                <td><?= htmlspecialchars($mhs['angkatan']) ?></td>
+                                <td><?= htmlspecialchars($mhs['status']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <tr>
-                            <th>No</th>
-                            <th>NIM</th>
-                            <th>Nama</th>
-                            <th>Program Studi</th>
-                            <th>Angkatan</th>
+                            <td colspan="7" class="text-center">
+                                Belum ada data mahasiswa.
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($mahasiswa as $index => $mhs): ?>
-                        <tr>
-                            <td><?= $index + 1 ?></td>
-                            <td><?= $mhs->getNim() ?></td>
-                            <td><?= $mhs->getNama() ?></td>
-                            <td><?= $mhs->getProdi() ?></td>
-                            <td><?= $mhs->getAngkatan() ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-<?php
-
-include __DIR__ . '/../partials/footer.php';
-
-?>
-        </div>
-    </div>
-</div>
-</body>
-</html>

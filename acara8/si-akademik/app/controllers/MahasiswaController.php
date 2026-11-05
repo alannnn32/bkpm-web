@@ -2,103 +2,105 @@
 <?php
 
 require_once __DIR__ . '/../Models/MahasiswaModel.php';
+require_once __DIR__ . '/../Models/ProdiModel.php';
 
 class MahasiswaController
 {
+    // Menampilkan daftar mahasiswa
     public function index()
     {
         $model = new MahasiswaModel();
         $mahasiswa = $model->all();
 
         require __DIR__ . '/../Views/partials/header.php';
-        ?>
-
-        <div class="container mt-5 mb-5">
-            <div class="card shadow">
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Daftar Mahasiswa</h2>
-
-                        <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa/create"
-                           class="btn btn-primary">
-                            + Tambah Mahasiswa
-                        </a>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>NIM</th>
-                                    <th>Nama</th>
-                                    <th>Email</th>
-                                    <th>Program Studi</th>
-                                    <th>Angkatan</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php foreach ($mahasiswa as $index => $mhs): ?>
-                                    <tr>
-                                        <td><?= $index + 1 ?></td>
-                                        <td><?= htmlspecialchars($mhs['nim']) ?></td>
-                                        <td><?= htmlspecialchars($mhs['nama']) ?></td>
-                                        <td><?= htmlspecialchars($mhs['email']) ?></td>
-                                        <td><?= htmlspecialchars($mhs['nama_prodi']) ?></td>
-                                        <td><?= htmlspecialchars((string) $mhs['angkatan']) ?></td>
-                                        <td><?= htmlspecialchars($mhs['status']) ?></td>
-
-                                        <td>
-                                            <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa/edit?id=<?= (int) $mhs['id'] ?>"
-                                               class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
-
-                                            <form action="/bkpm_web/acara8/si-akademik/public/mahasiswa/delete"
-                                                  method="POST"
-                                                  class="d-inline"
-                                                  onsubmit="return confirm('Yakin ingin menghapus mahasiswa ini?')">
-
-                                                <input type="hidden"
-                                                       name="id"
-                                                       value="<?= (int) $mhs['id'] ?>">
-
-                                                <button type="submit"
-                                                        class="btn btn-danger btn-sm">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-
-                                <?php if (empty($mahasiswa)): ?>
-                                    <tr>
-                                        <td colspan="8" class="text-center">
-                                            Belum ada data mahasiswa.
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-
-                        </table>
-                    </div>
-
-                    <a href="/bkpm_web/acara8/si-akademik/public/dashboard"
-                       class="btn btn-secondary">
-                        Kembali ke Dashboard
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <?php
+        require __DIR__ . '/../Views/mahasiswa/index.php';
         require __DIR__ . '/../Views/partials/footer.php';
+    }
+
+    // Menampilkan form tambah mahasiswa
+    public function create()
+    {
+        $prodiModel = new ProdiModel();
+        $prodi = $prodiModel->all();
+        $errors = [];
+
+        require __DIR__ . '/../Views/partials/header.php';
+        require __DIR__ . '/../Views/mahasiswa/create.php';
+        require __DIR__ . '/../Views/partials/footer.php';
+    }
+
+    // Memproses penyimpanan mahasiswa
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit('Method tidak diizinkan.');
+        }
+
+        $nim = trim($_POST['nim'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $prodiId = (int) ($_POST['prodi_id'] ?? 0);
+        $angkatan = (int) ($_POST['angkatan'] ?? 0);
+        $status = $_POST['status'] ?? '';
+
+        $errors = [];
+
+        if ($nim === '') {
+            $errors[] = 'NIM wajib diisi.';
+        }
+
+        if ($nama === '') {
+            $errors[] = 'Nama wajib diisi.';
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Format email tidak valid.';
+        }
+
+        if ($prodiId <= 0) {
+            $errors[] = 'Program studi wajib dipilih.';
+        }
+
+        if ($angkatan < 1901 || $angkatan > 2155) {
+            $errors[] = 'Angkatan tidak valid.';
+        }
+
+        if (!in_array($status, ['aktif', 'cuti', 'lulus'], true)) {
+            $errors[] = 'Status tidak valid.';
+        }
+
+        $prodiModel = new ProdiModel();
+        $prodi = $prodiModel->all();
+
+        if (!empty($errors)) {
+            require __DIR__ . '/../Views/partials/header.php';
+            require __DIR__ . '/../Views/mahasiswa/create.php';
+            require __DIR__ . '/../Views/partials/footer.php';
+            return;
+        }
+
+        try {
+            $model = new MahasiswaModel();
+
+            $model->create([
+                'nim' => $nim,
+                'nama' => $nama,
+                'email' => $email,
+                'prodi_id' => $prodiId,
+                'angkatan' => $angkatan,
+                'status' => $status
+            ]);
+
+            header('Location: /bkpm_web/acara8/si-akademik/public/mahasiswa');
+            exit;
+
+        } catch (PDOException $e) {
+            $errors[] = 'Gagal menyimpan data. Periksa apakah NIM sudah digunakan.';
+
+            require __DIR__ . '/../Views/partials/header.php';
+            require __DIR__ . '/../Views/mahasiswa/create.php';
+            require __DIR__ . '/../Views/partials/footer.php';
+        }
     }
 }
