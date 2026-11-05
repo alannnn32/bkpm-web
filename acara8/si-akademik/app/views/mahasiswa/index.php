@@ -21,6 +21,7 @@
                         <th>Program Studi</th>
                         <th>Angkatan</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
 
@@ -35,6 +36,12 @@
                                 <td><?= htmlspecialchars($mhs['nama_prodi']) ?></td>
                                 <td><?= htmlspecialchars($mhs['angkatan']) ?></td>
                                 <td><?= htmlspecialchars($mhs['status']) ?></td>
+                                <td>
+                                    <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa/edit?id=<?= $mhs['id'] ?>"
+                                        class="btn btn-warning btn-sm">
+                                            Edit
+                                    </a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
