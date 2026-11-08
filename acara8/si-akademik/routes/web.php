@@ -56,6 +56,42 @@ return [
         'middleware' => ['AuthMiddleware']
     ],
 
+    '/prodi' => [
+    'controller' => 'ProdiController',
+    'action' => 'index',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/prodi/create' => [
+    'controller' => 'ProdiController',
+    'action' => 'create',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/prodi/store' => [
+    'controller' => 'ProdiController',
+    'action' => 'store',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/prodi/edit' => [
+    'controller' => 'ProdiController',
+    'action' => 'edit',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/prodi/update' => [
+    'controller' => 'ProdiController',
+    'action' => 'update',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/prodi/delete' => [
+    'controller' => 'ProdiController',
+    'action' => 'destroy',
+    'middleware' => ['AuthMiddleware']
+],
+
     '/logout' => [
         'controller' => 'AuthController',
         'action' => 'logout',
