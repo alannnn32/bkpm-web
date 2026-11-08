@@ -178,4 +178,38 @@ class MahasiswaController
         }
     }
 
+    
+    // Menghapus data mahasiswa
+    public function destroy()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit('Method tidak diizinkan.');
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
+
+        if ($id <= 0) {
+            exit('ID mahasiswa tidak valid.');
+        }
+
+        try {
+            $model = new MahasiswaModel();
+            $mahasiswa = $model->find($id);
+
+            if (!$mahasiswa) {
+                http_response_code(404);
+                exit('Data mahasiswa tidak ditemukan.');
+            }
+
+            $model->delete($id);
+
+            header('Location: /bkpm_web/acara8/si-akademik/public/mahasiswa');
+            exit;
+
+        } catch (PDOException $e) {
+            exit('Gagal menghapus data mahasiswa.');
+        }
+    }
+
 }
