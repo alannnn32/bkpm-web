@@ -92,6 +92,42 @@ return [
     'middleware' => ['AuthMiddleware']
 ],
 
+'/matakuliah' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'index',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/matakuliah/create' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'create',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/matakuliah/store' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'store',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/matakuliah/edit' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'edit',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/matakuliah/update' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'update',
+    'middleware' => ['AuthMiddleware']
+],
+
+'/matakuliah/delete' => [
+    'controller' => 'MataKuliahController',
+    'action' => 'destroy',
+    'middleware' => ['AuthMiddleware']
+],
+
     '/logout' => [
         'controller' => 'AuthController',
         'action' => 'logout',
