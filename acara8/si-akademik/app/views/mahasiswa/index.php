@@ -3,10 +3,33 @@
     <h2>Data Mahasiswa</h2>
 
     <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa/create"
-       class="btn btn-primary">
+        class="btn btn-primary">
         + Tambah Mahasiswa
     </a>
 </div>
+
+<form action="/bkpm_web/acara8/si-akademik/public/mahasiswa"
+        method="GET"
+        class="mb-4">
+
+    <div class="input-group">
+        <input type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="Cari berdasarkan NIM atau nama..."
+                value="<?= htmlspecialchars($keyword) ?>">
+
+        <button type="submit" class="btn btn-primary">
+            Cari
+        </button>
+
+        <a href="/bkpm_web/acara8/si-akademik/public/mahasiswa"
+            class="btn btn-secondary">
+            Reset
+        </a>
+    </div>
+</form>
+
 
 <div class="card shadow">
     <div class="card-body">

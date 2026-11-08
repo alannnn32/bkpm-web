@@ -6,11 +6,19 @@ require_once __DIR__ . '/../Models/ProdiModel.php';
 
 class MahasiswaController
 {
-    // Menampilkan daftar mahasiswa
+    
+    // Menampilkan daftar dan pencarian mahasiswa
     public function index()
     {
         $model = new MahasiswaModel();
-        $mahasiswa = $model->all();
+
+        $keyword = trim($_GET['keyword'] ?? '');
+
+        if ($keyword !== '') {
+            $mahasiswa = $model->search($keyword);
+        } else {
+            $mahasiswa = $model->all();
+        }
 
         require __DIR__ . '/../Views/partials/header.php';
         require __DIR__ . '/../Views/mahasiswa/index.php';
