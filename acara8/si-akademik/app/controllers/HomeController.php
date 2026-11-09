@@ -40,8 +40,22 @@ class HomeController
                     <a
                         href="/bkpm_web/acara8/si-akademik/public/mahasiswa"
                         class="btn btn-primary"
-                    >
+                        >
                         Daftar Mahasiswa
+                    </a>
+
+                    <a
+                        href="/bkpm_web/acara8/si-akademik/public/prodi"
+                        class="btn btn-success"
+                    >
+                        CRUD Prodi
+                    </a>
+
+                    <a
+                        href="/bkpm_web/acara8/si-akademik/public/matakuliah"
+                        class="btn btn-info"
+                    >
+                        CRUD Mata Kuliah
                     </a>
 
                     <form
