@@ -24,21 +24,21 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        href="/bkpm_web/acara8/si-akademik/public/mahasiswa">
-                        CRUD Mahasiswa
+                        Daftar Mahasiswa
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link"
                        href="/bkpm_web/acara8/si-akademik/public/prodi">
-                        CRUD Prodi
+                        Daftar Prodi
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link"
                        href="/bkpm_web/acara8/si-akademik/public/matakuliah">
-                        CRUD Mata Kuliah
+                        Daftar Matkul
                     </a>
                 </li>
 

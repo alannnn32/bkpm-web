@@ -48,14 +48,14 @@ class HomeController
                         href="/bkpm_web/acara8/si-akademik/public/prodi"
                         class="btn btn-success"
                     >
-                        CRUD Prodi
+                        Daftar Prodi
                     </a>
 
                     <a
                         href="/bkpm_web/acara8/si-akademik/public/matakuliah"
                         class="btn btn-info"
                     >
-                        CRUD Mata Kuliah
+                        Daftar Matkul
                     </a>
 
                     <form
