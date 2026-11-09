@@ -38,7 +38,16 @@ $action = $route['action'];
 require_once __DIR__ . '/../app/Controllers/'
     . $controllerName . '.php';
 
-$controller = new $controllerName();
+// Router menyiapkan dependency lalu menyuntikkannya ke controller
+if ($controllerName === 'MahasiswaController') {
+    require_once __DIR__ . '/../app/repositories/MahasiswaRepository.php';
+
+    $controller = new MahasiswaController(
+        new MahasiswaRepository(Database::getInstance())
+    );
+} else {
+    $controller = new $controllerName();
+}
 
 if ($uri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();

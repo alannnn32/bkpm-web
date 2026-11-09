@@ -1,4 +1,4 @@
-
+<form action="/bkpm_web/acara9/si-akademik/public/mahasiswa/update" method="POST" novalidate>
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header">
@@ -6,6 +6,15 @@
         </div>
 
         <div class="card-body">
+                        <?php if (!empty($errors)): ?>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <form action="/bkpm_web/acara9/si-akademik/public/mahasiswa/update"
                   method="POST">
 

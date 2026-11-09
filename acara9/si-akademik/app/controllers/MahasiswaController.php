@@ -1,23 +1,64 @@
-
 <?php
 
-require_once __DIR__ . '/../Models/MahasiswaModel.php';
+require_once __DIR__ . '/../repositories/MahasiswaRepository.php';
 require_once __DIR__ . '/../Models/ProdiModel.php';
+require_once __DIR__ . '/../models/Mahasiswa.php';
 
 class MahasiswaController
 {
-    
+    private MahasiswaRepository $repo;
+
+    // Constructor injection: controller tidak membuat koneksi sendiri
+    public function __construct(MahasiswaRepository $repo)
+    {
+        $this->repo = $repo;
+    }
+
+        // Mengisi objek Mahasiswa lewat setter; semua error dikumpulkan
+    private function buatMahasiswa(array $input, array &$errors): Mahasiswa
+    {
+        $mahasiswa = new Mahasiswa();
+
+        $isian = [
+            'setNim'      => (string) ($input['nim'] ?? ''),
+            'setNama'     => (string) ($input['nama'] ?? ''),
+            'setEmail'    => (string) ($input['email'] ?? ''),
+            'setProdiId'  => (int) ($input['prodi_id'] ?? 0),
+            'setAngkatan' => (int) ($input['angkatan'] ?? 0),
+            'setStatus'   => (string) ($input['status'] ?? ''),
+        ];
+
+        foreach ($isian as $setter => $nilai) {
+            try {
+                $mahasiswa->$setter($nilai);
+            } catch (InvalidArgumentException $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        return $mahasiswa;
+    }
+
+    // Menampilkan ulang form edit (dipakai saat update gagal)
+    private function tampilFormEdit(array $mahasiswa, array $errors): void
+    {
+        $prodiModel = new ProdiModel();
+        $prodi = $prodiModel->all();
+
+        require __DIR__ . '/../Views/partials/header.php';
+        require __DIR__ . '/../Views/mahasiswa/edit.php';
+        require __DIR__ . '/../Views/partials/footer.php';
+    }
+
     // Menampilkan daftar dan pencarian mahasiswa
     public function index()
     {
-        $model = new MahasiswaModel();
-
         $keyword = trim($_GET['keyword'] ?? '');
 
         if ($keyword !== '') {
-            $mahasiswa = $model->search($keyword);
+            $mahasiswa = $this->repo->search($keyword);
         } else {
-            $mahasiswa = $model->all();
+            $mahasiswa = $this->repo->all();
         }
 
         require __DIR__ . '/../Views/partials/header.php';
@@ -37,7 +78,7 @@ class MahasiswaController
         require __DIR__ . '/../Views/partials/footer.php';
     }
 
-    // Memproses penyimpanan mahasiswa
+        // Memproses penyimpanan mahasiswa
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -45,38 +86,8 @@ class MahasiswaController
             exit('Method tidak diizinkan.');
         }
 
-        $nim = trim($_POST['nim'] ?? '');
-        $nama = trim($_POST['nama'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $prodiId = (int) ($_POST['prodi_id'] ?? 0);
-        $angkatan = (int) ($_POST['angkatan'] ?? 0);
-        $status = $_POST['status'] ?? '';
-
         $errors = [];
-
-        if ($nim === '') {
-            $errors[] = 'NIM wajib diisi.';
-        }
-
-        if ($nama === '') {
-            $errors[] = 'Nama wajib diisi.';
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Format email tidak valid.';
-        }
-
-        if ($prodiId <= 0) {
-            $errors[] = 'Program studi wajib dipilih.';
-        }
-
-        if ($angkatan < 1901 || $angkatan > 2155) {
-            $errors[] = 'Angkatan tidak valid.';
-        }
-
-        if (!in_array($status, ['aktif', 'cuti', 'lulus'], true)) {
-            $errors[] = 'Status tidak valid.';
-        }
+        $mahasiswa = $this->buatMahasiswa($_POST, $errors);
 
         $prodiModel = new ProdiModel();
         $prodi = $prodiModel->all();
@@ -89,16 +100,7 @@ class MahasiswaController
         }
 
         try {
-            $model = new MahasiswaModel();
-
-            $model->create([
-                'nim' => $nim,
-                'nama' => $nama,
-                'email' => $email,
-                'prodi_id' => $prodiId,
-                'angkatan' => $angkatan,
-                'status' => $status
-            ]);
+            $this->repo->create($mahasiswa->toArray());
 
             header('Location: /bkpm_web/acara9/si-akademik/public/mahasiswa');
             exit;
@@ -112,14 +114,12 @@ class MahasiswaController
         }
     }
 
-    
-    // Menampilkan form edit mahasiswa
+        // Menampilkan form edit mahasiswa
     public function edit()
     {
         $id = (int) ($_GET['id'] ?? 0);
 
-        $model = new MahasiswaModel();
-        $mahasiswa = $model->find($id);
+        $mahasiswa = $this->repo->find($id);
 
         if (!$mahasiswa) {
             http_response_code(404);
@@ -146,47 +146,43 @@ class MahasiswaController
 
         $id = (int) ($_POST['id'] ?? 0);
 
-        $model = new MahasiswaModel();
-        $mahasiswa = $model->find($id);
+        $dataLama = $this->repo->find($id);
 
-        if (!$mahasiswa) {
+        if (!$dataLama) {
             http_response_code(404);
             exit('Data mahasiswa tidak ditemukan.');
         }
 
-        $data = [
-            'nim' => trim($_POST['nim'] ?? ''),
-            'nama' => trim($_POST['nama'] ?? ''),
-            'email' => trim($_POST['email'] ?? ''),
-            'prodi_id' => (int) ($_POST['prodi_id'] ?? 0),
-            'angkatan' => (int) ($_POST['angkatan'] ?? 0),
-            'status' => $_POST['status'] ?? ''
-        ];
+        $errors = [];
+        $mahasiswa = $this->buatMahasiswa($_POST, $errors);
 
-        if (
-            $data['nim'] === '' ||
-            $data['nama'] === '' ||
-            !filter_var($data['email'], FILTER_VALIDATE_EMAIL) ||
-            $data['prodi_id'] <= 0 ||
-            $data['angkatan'] < 1901 ||
-            $data['angkatan'] > 2155 ||
-            !in_array($data['status'], ['aktif', 'cuti', 'lulus'], true)
-        ) {
-            exit('Data tidak valid. Silakan periksa kembali input.');
+        // Isian pengguna dipertahankan agar form tidak kosong kembali
+        $isianForm = array_merge($dataLama, [
+            'nim'      => $_POST['nim'] ?? '',
+            'nama'     => $_POST['nama'] ?? '',
+            'email'    => $_POST['email'] ?? '',
+            'prodi_id' => $_POST['prodi_id'] ?? '',
+            'angkatan' => $_POST['angkatan'] ?? '',
+            'status'   => $_POST['status'] ?? '',
+        ]);
+
+        if (!empty($errors)) {
+            $this->tampilFormEdit($isianForm, $errors);
+            return;
         }
 
         try {
-            $model->update($id, $data);
+            $this->repo->update($id, $mahasiswa->toArray());
 
             header('Location: /bkpm_web/acara9/si-akademik/public/mahasiswa');
             exit;
 
         } catch (PDOException $e) {
-            exit('Gagal memperbarui data. Periksa kembali data yang dimasukkan.');
+            $errors[] = 'Gagal memperbarui data. Periksa apakah NIM sudah digunakan.';
+            $this->tampilFormEdit($isianForm, $errors);
         }
     }
 
-    
     // Menghapus data mahasiswa
     public function destroy()
     {
@@ -202,15 +198,14 @@ class MahasiswaController
         }
 
         try {
-            $model = new MahasiswaModel();
-            $mahasiswa = $model->find($id);
+            $mahasiswa = $this->repo->find($id);
 
             if (!$mahasiswa) {
                 http_response_code(404);
                 exit('Data mahasiswa tidak ditemukan.');
             }
 
-            $model->delete($id);
+            $this->repo->delete($id);
 
             header('Location: /bkpm_web/acara9/si-akademik/public/mahasiswa');
             exit;
@@ -219,5 +214,4 @@ class MahasiswaController
             exit('Gagal menghapus data mahasiswa.');
         }
     }
-
 }

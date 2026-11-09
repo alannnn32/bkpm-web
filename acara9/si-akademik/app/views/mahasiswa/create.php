@@ -1,7 +1,7 @@
-
-<div class="container mt-5 mb-5">
-    <div class="card shadow">
-        <div class="card-body">
+<form action="/bkpm_web/acara9/si-akademik/public/mahasiswa/store" method="POST" novalidate>
+    <div class="container mt-5 mb-5">
+        <div class="card shadow">
+            <div class="card-body">
 
             <h2 class="mb-4">Tambah Mahasiswa</h2>
 
