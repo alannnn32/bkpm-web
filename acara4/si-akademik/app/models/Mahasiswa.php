@@ -24,6 +24,6 @@ class Mahasiswa
     }
     public function getAngkatan()
     {
-        return "20" . substr($this->nim, 3, 2);
+        return "20" . substr($this->nim, 7, 2);
     }
 }
