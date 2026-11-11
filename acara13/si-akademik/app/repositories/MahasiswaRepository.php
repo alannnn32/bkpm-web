@@ -55,6 +55,23 @@ class MahasiswaRepository
         return $stmt->fetch();
     }
 
+        // Apakah NIM sudah dipakai? $exceptId dipakai saat edit
+    public function existsByNim(string $nim, ?int $exceptId = null): bool
+    {
+        $sql = "SELECT COUNT(*) FROM mahasiswa WHERE nim = :nim";
+        $params = ['nim' => $nim];
+
+        if ($exceptId !== null) {
+            $sql .= " AND id <> :id";
+            $params['id'] = $exceptId;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     // Tambah data, mengembalikan ID baru
     public function create(array $data): string
     {

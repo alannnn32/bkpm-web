@@ -40,10 +40,20 @@ require_once __DIR__ . '/../app/Controllers/'
 
 // Router menyiapkan dependency lalu menyuntikkannya ke controller
 if ($controllerName === 'MahasiswaController') {
+    require_once __DIR__ . '/../app/core/Database.php';
     require_once __DIR__ . '/../app/repositories/MahasiswaRepository.php';
+    require_once __DIR__ . '/../app/repositories/ProdiRepository.php';
+    require_once __DIR__ . '/../app/services/MahasiswaService.php';
+
+    // Router menyiapkan semua dependency, lalu menyuntikkannya
+    $db = Database::getInstance();
+    $mahasiswaRepo = new MahasiswaRepository($db);
+    $prodiRepo = new ProdiRepository($db);
 
     $controller = new MahasiswaController(
-        new MahasiswaRepository(Database::getInstance())
+        $mahasiswaRepo,
+        $prodiRepo,
+        new MahasiswaService($mahasiswaRepo, $prodiRepo)
     );
 } else {
     $controller = new $controllerName();

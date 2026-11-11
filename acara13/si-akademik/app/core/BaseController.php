@@ -5,7 +5,9 @@ class BaseController
     // Menampilkan halaman: header + isi view + footer
     protected function view(string $view, array $data = []): void
     {
-        // Mengubah ['title' => 'X'] menjadi variabel $title di dalam view
+        // Flash message diambil sekali, lalu otomatis dihapus dari session
+        $flash = $this->pullFlash();
+
         extract($data);
 
         require __DIR__ . '/../views/partials/header.php';
@@ -18,5 +20,23 @@ class BaseController
     {
         header("Location: {$url}");
         exit;
+    }
+
+    // Menyimpan pesan sementara di session (tampil di request berikutnya)
+    protected function setFlash(string $type, string $message): void
+    {
+        $_SESSION['flash'] = [
+            'type'    => $type,     // 'success' atau 'danger'
+            'message' => $message,
+        ];
+    }
+
+    // Mengambil pesan lalu menghapusnya, jadi hanya tampil satu kali
+    private function pullFlash(): ?array
+    {
+        $flash = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
+
+        return $flash;
     }
 }

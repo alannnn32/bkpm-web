@@ -8,6 +8,12 @@
     </a>
 </div>
 
+<?php if (!empty($flash)): ?>
+    <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>">
+        <?= htmlspecialchars($flash['message']) ?>
+    </div>
+<?php endif; ?>
+
 <form action="/bkpm_web/acara13/si-akademik/public/mahasiswa"
         method="GET"
         class="mb-4">
