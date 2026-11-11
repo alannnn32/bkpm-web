@@ -1,20 +1,22 @@
 <?php
 
+require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../repositories/MahasiswaRepository.php';
-require_once __DIR__ . '/../Models/ProdiModel.php';
 require_once __DIR__ . '/../models/Mahasiswa.php';
+require_once __DIR__ . '/../Models/ProdiModel.php';
 
-class MahasiswaController
+class MahasiswaController extends BaseController
 {
+    private const URL_DAFTAR = '/bkpm_web/acara10/si-akademik/public/mahasiswa';
+
     private MahasiswaRepository $repo;
 
-    // Constructor injection: controller tidak membuat koneksi sendiri
     public function __construct(MahasiswaRepository $repo)
     {
         $this->repo = $repo;
     }
 
-        // Mengisi objek Mahasiswa lewat setter; semua error dikumpulkan
+    // Mengisi objek Mahasiswa lewat setter; semua error dikumpulkan
     private function buatMahasiswa(array $input, array &$errors): Mahasiswa
     {
         $mahasiswa = new Mahasiswa();
@@ -39,15 +41,10 @@ class MahasiswaController
         return $mahasiswa;
     }
 
-    // Menampilkan ulang form edit (dipakai saat update gagal)
-    private function tampilFormEdit(array $mahasiswa, array $errors): void
+    // Daftar prodi untuk dropdown pada form
+    private function daftarProdi(): array
     {
-        $prodiModel = new ProdiModel();
-        $prodi = $prodiModel->all();
-
-        require __DIR__ . '/../Views/partials/header.php';
-        require __DIR__ . '/../Views/mahasiswa/edit.php';
-        require __DIR__ . '/../Views/partials/footer.php';
+        return (new ProdiModel())->all();
     }
 
     // Menampilkan daftar dan pencarian mahasiswa
@@ -61,24 +58,22 @@ class MahasiswaController
             $mahasiswa = $this->repo->all();
         }
 
-        require __DIR__ . '/../Views/partials/header.php';
-        require __DIR__ . '/../Views/mahasiswa/index.php';
-        require __DIR__ . '/../Views/partials/footer.php';
+        $this->view('mahasiswa/index', [
+            'mahasiswa' => $mahasiswa,
+            'keyword'   => $keyword,
+        ]);
     }
 
     // Menampilkan form tambah mahasiswa
     public function create()
     {
-        $prodiModel = new ProdiModel();
-        $prodi = $prodiModel->all();
-        $errors = [];
-
-        require __DIR__ . '/../Views/partials/header.php';
-        require __DIR__ . '/../Views/mahasiswa/create.php';
-        require __DIR__ . '/../Views/partials/footer.php';
+        $this->view('mahasiswa/create', [
+            'prodi'  => $this->daftarProdi(),
+            'errors' => [],
+        ]);
     }
 
-        // Memproses penyimpanan mahasiswa
+    // Memproses penyimpanan mahasiswa
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -89,32 +84,29 @@ class MahasiswaController
         $errors = [];
         $mahasiswa = $this->buatMahasiswa($_POST, $errors);
 
-        $prodiModel = new ProdiModel();
-        $prodi = $prodiModel->all();
-
         if (!empty($errors)) {
-            require __DIR__ . '/../Views/partials/header.php';
-            require __DIR__ . '/../Views/mahasiswa/create.php';
-            require __DIR__ . '/../Views/partials/footer.php';
+            $this->view('mahasiswa/create', [
+                'prodi'  => $this->daftarProdi(),
+                'errors' => $errors,
+            ]);
             return;
         }
 
         try {
             $this->repo->create($mahasiswa->toArray());
-
-            header('Location: /bkpm_web/acara10/si-akademik/public/mahasiswa');
-            exit;
+            $this->redirect(self::URL_DAFTAR);
 
         } catch (PDOException $e) {
             $errors[] = 'Gagal menyimpan data. Periksa apakah NIM sudah digunakan.';
 
-            require __DIR__ . '/../Views/partials/header.php';
-            require __DIR__ . '/../Views/mahasiswa/create.php';
-            require __DIR__ . '/../Views/partials/footer.php';
+            $this->view('mahasiswa/create', [
+                'prodi'  => $this->daftarProdi(),
+                'errors' => $errors,
+            ]);
         }
     }
 
-        // Menampilkan form edit mahasiswa
+    // Menampilkan form edit mahasiswa
     public function edit()
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -126,14 +118,11 @@ class MahasiswaController
             exit('Data mahasiswa tidak ditemukan.');
         }
 
-        $prodiModel = new ProdiModel();
-        $prodi = $prodiModel->all();
-
-        $errors = [];
-
-        require __DIR__ . '/../Views/partials/header.php';
-        require __DIR__ . '/../Views/mahasiswa/edit.php';
-        require __DIR__ . '/../Views/partials/footer.php';
+        $this->view('mahasiswa/edit', [
+            'mahasiswa' => $mahasiswa,
+            'prodi'     => $this->daftarProdi(),
+            'errors'    => [],
+        ]);
     }
 
     // Memproses perubahan data mahasiswa
@@ -167,19 +156,26 @@ class MahasiswaController
         ]);
 
         if (!empty($errors)) {
-            $this->tampilFormEdit($isianForm, $errors);
+            $this->view('mahasiswa/edit', [
+                'mahasiswa' => $isianForm,
+                'prodi'     => $this->daftarProdi(),
+                'errors'    => $errors,
+            ]);
             return;
         }
 
         try {
             $this->repo->update($id, $mahasiswa->toArray());
-
-            header('Location: /bkpm_web/acara10/si-akademik/public/mahasiswa');
-            exit;
+            $this->redirect(self::URL_DAFTAR);
 
         } catch (PDOException $e) {
             $errors[] = 'Gagal memperbarui data. Periksa apakah NIM sudah digunakan.';
-            $this->tampilFormEdit($isianForm, $errors);
+
+            $this->view('mahasiswa/edit', [
+                'mahasiswa' => $isianForm,
+                'prodi'     => $this->daftarProdi(),
+                'errors'    => $errors,
+            ]);
         }
     }
 
@@ -198,17 +194,13 @@ class MahasiswaController
         }
 
         try {
-            $mahasiswa = $this->repo->find($id);
-
-            if (!$mahasiswa) {
+            if (!$this->repo->find($id)) {
                 http_response_code(404);
                 exit('Data mahasiswa tidak ditemukan.');
             }
 
             $this->repo->delete($id);
-
-            header('Location: /bkpm_web/acara10/si-akademik/public/mahasiswa');
-            exit;
+            $this->redirect(self::URL_DAFTAR);
 
         } catch (PDOException $e) {
             exit('Gagal menghapus data mahasiswa.');
