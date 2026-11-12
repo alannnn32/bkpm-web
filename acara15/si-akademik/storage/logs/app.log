@@ -1,0 +1,5 @@
+2026-11-12 08:39:17 - [INFO] Uji logger: aplikasi berjalan
+2026-11-12 08:39:17 - [ERROR] Uji logger: contoh error
+2026-11-12 08:44:38 - [ERROR] MahasiswaService::create - Simulasi: SQLSTATE[HY000] koneksi database terputus
+2026-11-12 08:44:38 - [ERROR] MahasiswaService::update id=1 - Simulasi: SQLSTATE[HY000] koneksi database terputus
+2026-11-12 08:52:44 - [ERROR] PDOException - SQLSTATE[HY000] [1049] Unknown database 'si_akademik_salah' (Database.php:18)
