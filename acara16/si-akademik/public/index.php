@@ -4,15 +4,25 @@ session_start();
 require_once __DIR__ . '/../app/core/Logger.php';
 
 // Semua exception yang tidak ditangkap berakhir di sini
-set_exception_handler(function (Throwable $e) {
+set_exception_handler(function (Throwable $e) use (&$uri) {
     // Detail teknis masuk ke log (tanpa stack trace)
     Logger::error(
         get_class($e) . ' - ' . $e->getMessage()
         . ' (' . basename($e->getFile()) . ':' . $e->getLine() . ')'
     );
 
-    // Pengguna hanya melihat pesan umum
     http_response_code(500);
+
+    // Request ke API dibalas JSON, halaman web dibalas HTML
+    if (str_starts_with((string) $uri, '/api/')) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Terjadi kesalahan pada server.',
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
     echo '<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -40,9 +50,40 @@ if ($uri === '') {
     $uri = '/';
 }
 
+$params = [];
+
+if (!isset($routes[$uri])) {
+    // Coba route dinamis, misalnya /api/mahasiswa/{id}
+    foreach (array_keys($routes) as $pattern) {
+        if (strpos($pattern, '{') === false) {
+            continue;
+        }
+
+        // /api/mahasiswa/{id} -> #^/api/mahasiswa/(?P<id>[^/]+)$#
+        $regex = '#^' . preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $pattern) . '$#';
+
+        if (preg_match($regex, $uri, $cocok)) {
+            // Ambil hanya capture bernama (id), buang capture bernomor
+            $params = array_filter($cocok, 'is_string', ARRAY_FILTER_USE_KEY);
+            $uri = $pattern;
+            break;
+        }
+    }
+}
+
 if (!isset($routes[$uri])) {
     http_response_code(404);
-    echo '404 - Halaman Tidak Ditemukan';
+
+    if (str_starts_with($uri, '/api/')) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Endpoint tidak ditemukan.',
+        ], JSON_UNESCAPED_UNICODE);
+    } else {
+        echo '404 - Halaman Tidak Ditemukan';
+    }
+
     exit;
 }
 
@@ -100,5 +141,5 @@ if ($controllerName === 'MahasiswaController') {
 if ($uri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();
 } else {
-    $controller->$action();
+    $controller->$action($params);
 }

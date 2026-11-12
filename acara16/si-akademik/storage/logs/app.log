@@ -3,3 +3,5 @@
 2026-11-12 08:44:38 - [ERROR] MahasiswaService::create - Simulasi: SQLSTATE[HY000] koneksi database terputus
 2026-11-12 08:44:38 - [ERROR] MahasiswaService::update id=1 - Simulasi: SQLSTATE[HY000] koneksi database terputus
 2026-11-12 08:52:44 - [ERROR] PDOException - SQLSTATE[HY000] [1049] Unknown database 'si_akademik_salah' (Database.php:18)
+2026-11-12 14:02:35 - [ERROR] PDOException - SQLSTATE[HY000] [1049] Unknown database 'si_akademik_salah' (Database.php:18)
+2026-11-12 14:07:10 - [ERROR] PDOException - SQLSTATE[HY000] [1049] Unknown database 'si_akademik_salah' (Database.php:18)

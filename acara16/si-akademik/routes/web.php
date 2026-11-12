@@ -62,6 +62,12 @@ return [
         'middleware' => []
     ],
 
+        '/api/mahasiswa/{id}' => [
+        'controller' => 'ApiMahasiswaController',
+        'action' => 'item',
+        'middleware' => []
+    ],
+
     '/prodi' => [
     'controller' => 'ProdiController',
     'action' => 'index',
