@@ -1,7 +1,6 @@
 
 <?php
 
-require_once __DIR__ . '/Model.php';
 
 class MataKuliahModel extends Model
 {

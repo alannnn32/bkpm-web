@@ -68,6 +68,18 @@ return [
         'middleware' => []
     ],
 
+        '/api/matakuliah' => [
+        'controller' => 'ApiMataKuliahController',
+        'action' => 'index',
+        'middleware' => []
+    ],
+
+    '/api/matakuliah/{id}' => [
+        'controller' => 'ApiMataKuliahController',
+        'action' => 'item',
+        'middleware' => []
+    ],
+
     '/prodi' => [
     'controller' => 'ProdiController',
     'action' => 'index',

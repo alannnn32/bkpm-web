@@ -1,8 +1,7 @@
 
 <?php
 
-require_once __DIR__ . '/../Models/MataKuliahModel.php';
-require_once __DIR__ . '/../Models/ProdiModel.php';
+
 
 class MataKuliahController
 {

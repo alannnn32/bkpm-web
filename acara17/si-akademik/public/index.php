@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require_once __DIR__ . '/../app/core/Logger.php';
+require_once __DIR__ . '/../app/core/autoload.php';
 
 // Semua exception yang tidak ditangkap berakhir di sini
 set_exception_handler(function (Throwable $e) use (&$uri) {
@@ -90,9 +90,6 @@ if (!isset($routes[$uri])) {
 $route = $routes[$uri];
 
 foreach ($route['middleware'] as $middlewareName) {
-    require_once __DIR__ . '/../app/Core/Middleware/'
-        . $middlewareName . '.php';
-
     $middleware = new $middlewareName();
     $middleware->handle();
 }
@@ -100,17 +97,9 @@ foreach ($route['middleware'] as $middlewareName) {
 $controllerName = $route['controller'];
 $action = $route['action'];
 
-require_once __DIR__ . '/../app/Controllers/'
-    . $controllerName . '.php';
-
-// Router menyiapkan dependency lalu menyuntikkannya ke controller
+// Router menyiapkan dependency lalu menyuntikkannya ke controller.
+// Semua class dimuat otomatis oleh autoloader saat pertama kali dipakai.
 if ($controllerName === 'MahasiswaController') {
-    require_once __DIR__ . '/../app/core/Database.php';
-    require_once __DIR__ . '/../app/repositories/MahasiswaRepository.php';
-    require_once __DIR__ . '/../app/repositories/ProdiRepository.php';
-    require_once __DIR__ . '/../app/services/MahasiswaService.php';
-
-    // Router menyiapkan semua dependency, lalu menyuntikkannya
     $db = Database::getInstance();
     $mahasiswaRepo = new MahasiswaRepository($db);
     $prodiRepo = new ProdiRepository($db);
@@ -121,11 +110,6 @@ if ($controllerName === 'MahasiswaController') {
         new MahasiswaService($mahasiswaRepo, $prodiRepo)
     );
 } elseif ($controllerName === 'ApiMahasiswaController') {
-    require_once __DIR__ . '/../app/core/Database.php';
-    require_once __DIR__ . '/../app/repositories/MahasiswaRepository.php';
-    require_once __DIR__ . '/../app/repositories/ProdiRepository.php';
-    require_once __DIR__ . '/../app/services/MahasiswaService.php';
-
     $db = Database::getInstance();
     $mahasiswaRepo = new MahasiswaRepository($db);
     $prodiRepo = new ProdiRepository($db);
@@ -133,6 +117,15 @@ if ($controllerName === 'MahasiswaController') {
     $controller = new ApiMahasiswaController(
         $mahasiswaRepo,
         new MahasiswaService($mahasiswaRepo, $prodiRepo)
+    );
+} elseif ($controllerName === 'ApiMataKuliahController') {
+    $db = Database::getInstance();
+    $prodiRepo = new ProdiRepository($db);
+    $mataKuliahRepo = new MataKuliahRepository($db);
+
+    $controller = new ApiMataKuliahController(
+        $mataKuliahRepo,
+        new MataKuliahService($mataKuliahRepo, $prodiRepo)
     );
 } else {
     $controller = new $controllerName();

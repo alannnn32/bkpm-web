@@ -1,10 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../models/Mahasiswa.php';
-require_once __DIR__ . '/../repositories/MahasiswaRepository.php';
-require_once __DIR__ . '/../repositories/ProdiRepository.php';
-require_once __DIR__ . '/../core/Logger.php';
-
 class MahasiswaService
 {
     private MahasiswaRepository $repo;
