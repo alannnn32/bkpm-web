@@ -79,6 +79,20 @@ if ($controllerName === 'MahasiswaController') {
         $prodiRepo,
         new MahasiswaService($mahasiswaRepo, $prodiRepo)
     );
+} elseif ($controllerName === 'ApiMahasiswaController') {
+    require_once __DIR__ . '/../app/core/Database.php';
+    require_once __DIR__ . '/../app/repositories/MahasiswaRepository.php';
+    require_once __DIR__ . '/../app/repositories/ProdiRepository.php';
+    require_once __DIR__ . '/../app/services/MahasiswaService.php';
+
+    $db = Database::getInstance();
+    $mahasiswaRepo = new MahasiswaRepository($db);
+    $prodiRepo = new ProdiRepository($db);
+
+    $controller = new ApiMahasiswaController(
+        $mahasiswaRepo,
+        new MahasiswaService($mahasiswaRepo, $prodiRepo)
+    );
 } else {
     $controller = new $controllerName();
 }

@@ -22,6 +22,19 @@ class BaseController
         exit;
     }
 
+        // Mengirim response JSON lalu menghentikan eksekusi
+    protected function json(array $payload, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+
+        echo json_encode(
+            $payload,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+        exit;
+    }
+
     // Menyimpan pesan sementara di session (tampil di request berikutnya)
     protected function setFlash(string $type, string $message): void
     {

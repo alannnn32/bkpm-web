@@ -56,6 +56,12 @@ return [
         'middleware' => ['AuthMiddleware']
     ],
 
+        '/api/mahasiswa' => [
+        'controller' => 'ApiMahasiswaController',
+        'action' => 'index',
+        'middleware' => []
+    ],
+
     '/prodi' => [
     'controller' => 'ProdiController',
     'action' => 'index',
