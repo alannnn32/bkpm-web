@@ -1,7 +1,7 @@
 <?php
 
 // Fungsi bersama untuk semua controller API
-abstract class BaseApiController extends BaseController
+abstract class BaseApiController
 {
     // Membaca body JSON; kalau tidak valid langsung dibalas 400
     protected function bacaJson(): array
@@ -9,10 +9,7 @@ abstract class BaseApiController extends BaseController
         $input = json_decode(file_get_contents('php://input'), true);
 
         if (!is_array($input)) {
-            $this->json([
-                'success' => false,
-                'message' => 'Body request harus berupa JSON yang valid.',
-            ], 400);
+            Response::json(400, false, 'Body request harus berupa JSON yang valid.');
         }
 
         return $input;
@@ -21,26 +18,17 @@ abstract class BaseApiController extends BaseController
     protected function pastikanIdValid(int $id): void
     {
         if ($id <= 0) {
-            $this->json([
-                'success' => false,
-                'message' => 'ID tidak valid.',
-            ], 400);
+            Response::json(400, false, 'ID tidak valid.');
         }
     }
 
     protected function tidakDitemukan(string $pesan = 'Data tidak ditemukan.'): void
     {
-        $this->json([
-            'success' => false,
-            'message' => $pesan,
-        ], 404);
+        Response::json(404, false, $pesan);
     }
 
     protected function methodTidakDiizinkan(): void
     {
-        $this->json([
-            'success' => false,
-            'message' => 'Method tidak diizinkan.',
-        ], 405);
+        Response::json(405, false, 'Method tidak diizinkan.');
     }
 }

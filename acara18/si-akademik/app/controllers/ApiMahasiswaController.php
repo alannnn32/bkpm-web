@@ -1,7 +1,6 @@
 <?php
 
-
-class ApiMahasiswaController extends BaseController
+class ApiMahasiswaController extends BaseApiController
 {
     private MahasiswaRepository $repo;
     private MahasiswaService $service;
@@ -17,14 +16,17 @@ class ApiMahasiswaController extends BaseController
     // /api/mahasiswa : method HTTP menentukan aksinya
     public function index()
     {
-        $method = $_SERVER['REQUEST_METHOD'];
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                $this->ambil();
+                break;
 
-        if ($method === 'GET') {
-            $this->ambil();
-        } elseif ($method === 'POST') {
-            $this->simpan();
-        } else {
-            $this->methodTidakDiizinkan();
+            case 'POST':
+                $this->simpan();
+                break;
+
+            default:
+                $this->methodTidakDiizinkan();
         }
     }
 
@@ -58,11 +60,7 @@ class ApiMahasiswaController extends BaseController
             $this->tampilkanSatu((int) $_GET['id']);
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data berhasil diambil',
-            'data'    => $this->repo->all(),
-        ]);
+        Response::json(200, true, 'Data berhasil diambil', $this->repo->all());
     }
 
     // GET /api/mahasiswa/{id}
@@ -73,36 +71,33 @@ class ApiMahasiswaController extends BaseController
         $mahasiswa = $this->repo->find($id);
 
         if (!$mahasiswa) {
-            $this->tidakDitemukan();
+            $this->tidakDitemukan('Data mahasiswa tidak ditemukan.');
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data berhasil diambil',
-            'data'    => $mahasiswa,
-        ]);
+        Response::json(200, true, 'Data berhasil diambil', $mahasiswa);
     }
 
     // POST /api/mahasiswa  (body: JSON)
     private function simpan(): void
     {
-        $input = $this->bacaJson();
-
-        $hasil = $this->service->create($input);
+        $hasil = $this->service->create($this->bacaJson());
 
         if (!$hasil['success']) {
-            $this->json([
-                'success' => false,
-                'message' => 'Data tidak valid atau gagal disimpan.',
-                'errors'  => $hasil['errors'],
-            ], 422);
+            Response::json(
+                422,
+                false,
+                'Data tidak valid atau gagal disimpan.',
+                null,
+                $hasil['errors']
+            );
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mahasiswa berhasil ditambahkan',
-            'data'    => $this->repo->find((int) $hasil['id']),
-        ], 201);
+        Response::json(
+            201,
+            true,
+            'Data mahasiswa berhasil ditambahkan',
+            $this->repo->find((int) $hasil['id'])
+        );
     }
 
     // PUT /api/mahasiswa/{id}  (body: JSON, semua field)
@@ -111,26 +106,27 @@ class ApiMahasiswaController extends BaseController
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {
-            $this->tidakDitemukan();
+            $this->tidakDitemukan('Data mahasiswa tidak ditemukan.');
         }
 
-        $input = $this->bacaJson();
-
-        $hasil = $this->service->update($id, $input);
+        $hasil = $this->service->update($id, $this->bacaJson());
 
         if (!$hasil['success']) {
-            $this->json([
-                'success' => false,
-                'message' => 'Data tidak valid atau gagal diubah.',
-                'errors'  => $hasil['errors'],
-            ], 422);
+            Response::json(
+                422,
+                false,
+                'Data tidak valid atau gagal diubah.',
+                null,
+                $hasil['errors']
+            );
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mahasiswa berhasil diubah',
-            'data'    => $this->repo->find($id),
-        ]);
+        Response::json(
+            200,
+            true,
+            'Data mahasiswa berhasil diubah',
+            $this->repo->find($id)
+        );
     }
 
     // DELETE /api/mahasiswa/{id}
@@ -139,7 +135,7 @@ class ApiMahasiswaController extends BaseController
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {
-            $this->tidakDitemukan();
+            $this->tidakDitemukan('Data mahasiswa tidak ditemukan.');
         }
 
         try {
@@ -147,58 +143,9 @@ class ApiMahasiswaController extends BaseController
         } catch (PDOException $e) {
             Logger::error("ApiMahasiswaController::hapus id={$id} - " . $e->getMessage());
 
-            $this->json([
-                'success' => false,
-                'message' => 'Data gagal dihapus.',
-            ], 500);
+            Response::json(500, false, 'Data gagal dihapus.');
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mahasiswa berhasil dihapus',
-        ]);
-    }
-
-    // ===== Pembantu =====
-
-    // Membaca body JSON; kalau tidak valid langsung dibalas 400
-    private function bacaJson(): array
-    {
-        $input = json_decode(file_get_contents('php://input'), true);
-
-        if (!is_array($input)) {
-            $this->json([
-                'success' => false,
-                'message' => 'Body request harus berupa JSON yang valid.',
-            ], 400);
-        }
-
-        return $input;
-    }
-
-    private function pastikanIdValid(int $id): void
-    {
-        if ($id <= 0) {
-            $this->json([
-                'success' => false,
-                'message' => 'ID tidak valid.',
-            ], 400);
-        }
-    }
-
-    private function tidakDitemukan(): void
-    {
-        $this->json([
-            'success' => false,
-            'message' => 'Data mahasiswa tidak ditemukan.',
-        ], 404);
-    }
-
-    private function methodTidakDiizinkan(): void
-    {
-        $this->json([
-            'success' => false,
-            'message' => 'Method tidak diizinkan.',
-        ], 405);
+        Response::json(200, true, 'Data mahasiswa berhasil dihapus');
     }
 }

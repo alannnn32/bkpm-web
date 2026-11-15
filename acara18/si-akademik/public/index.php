@@ -2,6 +2,10 @@
 
 session_start();
 require_once __DIR__ . '/../app/core/autoload.php';
+require_once __DIR__ . '/../config/app.php';
+
+// Samakan zona waktu seluruh aplikasi (timestamp dan log)
+date_default_timezone_set('Asia/Jakarta');
 
 // Semua exception yang tidak ditangkap berakhir di sini
 set_exception_handler(function (Throwable $e) use (&$uri) {
@@ -11,18 +15,13 @@ set_exception_handler(function (Throwable $e) use (&$uri) {
         . ' (' . basename($e->getFile()) . ':' . $e->getLine() . ')'
     );
 
-    http_response_code(500);
-
-    // Request ke API dibalas JSON, halaman web dibalas HTML
+    // Request ke API dibalas JSON dengan format seragam
     if (str_starts_with((string) $uri, '/api/')) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Terjadi kesalahan pada server.',
-        ], JSON_UNESCAPED_UNICODE);
-        return;
+        Response::json(500, false, 'Terjadi kesalahan pada server.');
     }
 
+    // Halaman web dibalas HTML
+    http_response_code(500);
     echo '<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -72,18 +71,13 @@ if (!isset($routes[$uri])) {
 }
 
 if (!isset($routes[$uri])) {
-    http_response_code(404);
-
+    // API dibalas JSON seragam, halaman web tetap teks biasa
     if (str_starts_with($uri, '/api/')) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Endpoint tidak ditemukan.',
-        ], JSON_UNESCAPED_UNICODE);
-    } else {
-        echo '404 - Halaman Tidak Ditemukan';
+        Response::json(404, false, 'Endpoint tidak ditemukan.');
     }
 
+    http_response_code(404);
+    echo '404 - Halaman Tidak Ditemukan';
     exit;
 }
 

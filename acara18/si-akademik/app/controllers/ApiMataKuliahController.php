@@ -18,7 +18,7 @@ class ApiMataKuliahController extends BaseApiController
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                $this->ambilSemua();
+                Response::json(200, true, 'Data berhasil diambil', $this->repo->all());
                 break;
 
             case 'POST':
@@ -53,16 +53,6 @@ class ApiMataKuliahController extends BaseApiController
         }
     }
 
-    // GET /api/matakuliah
-    private function ambilSemua(): void
-    {
-        $this->json([
-            'success' => true,
-            'message' => 'Data berhasil diambil',
-            'data'    => $this->repo->all(),
-        ]);
-    }
-
     // GET /api/matakuliah/{id}
     private function tampilkanSatu(int $id): void
     {
@@ -74,11 +64,7 @@ class ApiMataKuliahController extends BaseApiController
             $this->tidakDitemukan('Data mata kuliah tidak ditemukan.');
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data berhasil diambil',
-            'data'    => $matakuliah,
-        ]);
+        Response::json(200, true, 'Data berhasil diambil', $matakuliah);
     }
 
     // POST /api/matakuliah  (body: JSON)
@@ -87,18 +73,21 @@ class ApiMataKuliahController extends BaseApiController
         $hasil = $this->service->create($this->bacaJson());
 
         if (!$hasil['success']) {
-            $this->json([
-                'success' => false,
-                'message' => 'Data tidak valid atau gagal disimpan.',
-                'errors'  => $hasil['errors'],
-            ], 422);
+            Response::json(
+                422,
+                false,
+                'Data tidak valid atau gagal disimpan.',
+                null,
+                $hasil['errors']
+            );
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mata kuliah berhasil ditambahkan',
-            'data'    => $this->repo->find((int) $hasil['id']),
-        ], 201);
+        Response::json(
+            201,
+            true,
+            'Data mata kuliah berhasil ditambahkan',
+            $this->repo->find((int) $hasil['id'])
+        );
     }
 
     // PUT /api/matakuliah/{id}  (body: JSON, semua field)
@@ -113,18 +102,21 @@ class ApiMataKuliahController extends BaseApiController
         $hasil = $this->service->update($id, $this->bacaJson());
 
         if (!$hasil['success']) {
-            $this->json([
-                'success' => false,
-                'message' => 'Data tidak valid atau gagal diubah.',
-                'errors'  => $hasil['errors'],
-            ], 422);
+            Response::json(
+                422,
+                false,
+                'Data tidak valid atau gagal diubah.',
+                null,
+                $hasil['errors']
+            );
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mata kuliah berhasil diubah',
-            'data'    => $this->repo->find($id),
-        ]);
+        Response::json(
+            200,
+            true,
+            'Data mata kuliah berhasil diubah',
+            $this->repo->find($id)
+        );
     }
 
     // DELETE /api/matakuliah/{id}
@@ -141,15 +133,9 @@ class ApiMataKuliahController extends BaseApiController
         } catch (PDOException $e) {
             Logger::error("ApiMataKuliahController::hapus id={$id} - " . $e->getMessage());
 
-            $this->json([
-                'success' => false,
-                'message' => 'Data gagal dihapus.',
-            ], 500);
+            Response::json(500, false, 'Data gagal dihapus.');
         }
 
-        $this->json([
-            'success' => true,
-            'message' => 'Data mata kuliah berhasil dihapus',
-        ]);
+        Response::json(200, true, 'Data mata kuliah berhasil dihapus');
     }
 }
