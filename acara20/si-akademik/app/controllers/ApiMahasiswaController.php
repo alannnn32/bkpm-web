@@ -53,7 +53,7 @@ class ApiMahasiswaController extends BaseApiController
         }
     }
 
-    // GET /api/mahasiswa  atau  GET /api/mahasiswa?id=1
+    // GET /api/mahasiswa  atau  GET /api/mahasiswa?id=1  (publik)
     private function ambil(): void
     {
         if (isset($_GET['id'])) {
@@ -63,7 +63,7 @@ class ApiMahasiswaController extends BaseApiController
         Response::json(200, true, 'Data berhasil diambil', $this->repo->all());
     }
 
-    // GET /api/mahasiswa/{id}
+    // GET /api/mahasiswa/{id}  (publik)
     private function tampilkanSatu(int $id): void
     {
         $this->pastikanIdValid($id);
@@ -77,9 +77,11 @@ class ApiMahasiswaController extends BaseApiController
         Response::json(200, true, 'Data berhasil diambil', $mahasiswa);
     }
 
-    // POST /api/mahasiswa  (body: JSON)
+    // POST /api/mahasiswa  (butuh token; body: JSON)
     private function simpan(): void
     {
+        Auth::requireAuth();
+
         $hasil = $this->service->create($this->bacaJson());
 
         if (!$hasil['success']) {
@@ -100,9 +102,11 @@ class ApiMahasiswaController extends BaseApiController
         );
     }
 
-    // PUT /api/mahasiswa/{id}  (body: JSON, semua field)
+    // PUT /api/mahasiswa/{id}  (butuh token; body: JSON, semua field)
     private function ubah(int $id): void
     {
+        Auth::requireAuth();
+
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {
@@ -129,9 +133,11 @@ class ApiMahasiswaController extends BaseApiController
         );
     }
 
-    // DELETE /api/mahasiswa/{id}
+    // DELETE /api/mahasiswa/{id}  (butuh token)
     private function hapus(int $id): void
     {
+        Auth::requireAuth();
+
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {

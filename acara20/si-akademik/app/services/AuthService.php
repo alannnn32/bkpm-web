@@ -46,6 +46,44 @@ class AuthService
         return ['success' => true, 'id' => (int) $id];
     }
 
+    // Memeriksa username dan password
+    public function login(array $input): array
+    {
+        $username = trim((string) ($input['username'] ?? ''));
+        $password = (string) ($input['password'] ?? '');
+
+        $errors = [];
+
+        if ($username === '') {
+            $errors[] = 'Username wajib diisi.';
+        }
+
+        if ($password === '') {
+            $errors[] = 'Password wajib diisi.';
+        }
+
+        if (!empty($errors)) {
+            return ['success' => false, 'jenis' => 'validasi', 'errors' => $errors];
+        }
+
+        $user = $this->users->findByUsername($username);
+
+        // Pesan sama untuk "username tidak ada" dan "password salah"
+        if (!$user || !password_verify($password, $user['password'])) {
+            return ['success' => false, 'jenis' => 'kredensial'];
+        }
+
+        // Data yang keluar dari service tidak memuat hash password
+        return [
+            'success' => true,
+            'user'    => [
+                'id'       => (int) $user['id'],
+                'username' => $user['username'],
+                'role'     => $user['role'],
+            ],
+        ];
+    }
+
     // Mengembalikan daftar pesan error (kosong kalau semuanya valid)
     private function validate(string $username, string $email, string $password): array
     {

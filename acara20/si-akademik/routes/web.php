@@ -85,6 +85,12 @@ return [
         'middleware' => []
     ],
 
+    '/api/login' => [
+        'controller' => 'ApiAuthController',
+        'action' => 'login',
+        'middleware' => []
+    ],
+
     '/prodi' => [
         'controller' => 'ProdiController',
         'action' => 'index',

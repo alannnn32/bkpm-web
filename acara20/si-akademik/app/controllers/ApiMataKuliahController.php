@@ -53,7 +53,7 @@ class ApiMataKuliahController extends BaseApiController
         }
     }
 
-    // GET /api/matakuliah/{id}
+    // GET /api/matakuliah/{id}  (publik)
     private function tampilkanSatu(int $id): void
     {
         $this->pastikanIdValid($id);
@@ -67,9 +67,11 @@ class ApiMataKuliahController extends BaseApiController
         Response::json(200, true, 'Data berhasil diambil', $matakuliah);
     }
 
-    // POST /api/matakuliah  (body: JSON)
+    // POST /api/matakuliah  (butuh token; body: JSON)
     private function simpan(): void
     {
+        Auth::requireAuth();
+
         $hasil = $this->service->create($this->bacaJson());
 
         if (!$hasil['success']) {
@@ -90,9 +92,11 @@ class ApiMataKuliahController extends BaseApiController
         );
     }
 
-    // PUT /api/matakuliah/{id}  (body: JSON, semua field)
+    // PUT /api/matakuliah/{id}  (butuh token; body: JSON, semua field)
     private function ubah(int $id): void
     {
+        Auth::requireAuth();
+
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {
@@ -119,9 +123,11 @@ class ApiMataKuliahController extends BaseApiController
         );
     }
 
-    // DELETE /api/matakuliah/{id}
+    // DELETE /api/matakuliah/{id}  (butuh token)
     private function hapus(int $id): void
     {
+        Auth::requireAuth();
+
         $this->pastikanIdValid($id);
 
         if (!$this->repo->find($id)) {
