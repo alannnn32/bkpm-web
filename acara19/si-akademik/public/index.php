@@ -121,6 +121,10 @@ if ($controllerName === 'MahasiswaController') {
         $mataKuliahRepo,
         new MataKuliahService($mataKuliahRepo, $prodiRepo)
     );
+} elseif ($controllerName === 'ApiAuthController') {
+    $controller = new ApiAuthController(
+        new AuthService(new UserRepository(Database::getInstance()))
+    );
 } else {
     $controller = new $controllerName();
 }

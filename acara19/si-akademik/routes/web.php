@@ -1,4 +1,3 @@
-
 <?php
 
 return [
@@ -56,19 +55,19 @@ return [
         'middleware' => ['AuthMiddleware']
     ],
 
-        '/api/mahasiswa' => [
+    '/api/mahasiswa' => [
         'controller' => 'ApiMahasiswaController',
         'action' => 'index',
         'middleware' => []
     ],
 
-        '/api/mahasiswa/{id}' => [
+    '/api/mahasiswa/{id}' => [
         'controller' => 'ApiMahasiswaController',
         'action' => 'item',
         'middleware' => []
     ],
 
-        '/api/matakuliah' => [
+    '/api/matakuliah' => [
         'controller' => 'ApiMataKuliahController',
         'action' => 'index',
         'middleware' => []
@@ -80,77 +79,83 @@ return [
         'middleware' => []
     ],
 
+    '/api/register' => [
+        'controller' => 'ApiAuthController',
+        'action' => 'register',
+        'middleware' => []
+    ],
+
     '/prodi' => [
-    'controller' => 'ProdiController',
-    'action' => 'index',
-    'middleware' => ['AuthMiddleware']
-],
+        'controller' => 'ProdiController',
+        'action' => 'index',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/prodi/create' => [
-    'controller' => 'ProdiController',
-    'action' => 'create',
-    'middleware' => ['AuthMiddleware']
-],
+    '/prodi/create' => [
+        'controller' => 'ProdiController',
+        'action' => 'create',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/prodi/store' => [
-    'controller' => 'ProdiController',
-    'action' => 'store',
-    'middleware' => ['AuthMiddleware']
-],
+    '/prodi/store' => [
+        'controller' => 'ProdiController',
+        'action' => 'store',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/prodi/edit' => [
-    'controller' => 'ProdiController',
-    'action' => 'edit',
-    'middleware' => ['AuthMiddleware']
-],
+    '/prodi/edit' => [
+        'controller' => 'ProdiController',
+        'action' => 'edit',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/prodi/update' => [
-    'controller' => 'ProdiController',
-    'action' => 'update',
-    'middleware' => ['AuthMiddleware']
-],
+    '/prodi/update' => [
+        'controller' => 'ProdiController',
+        'action' => 'update',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/prodi/delete' => [
-    'controller' => 'ProdiController',
-    'action' => 'destroy',
-    'middleware' => ['AuthMiddleware']
-],
+    '/prodi/delete' => [
+        'controller' => 'ProdiController',
+        'action' => 'destroy',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'index',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'index',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah/create' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'create',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah/create' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'create',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah/store' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'store',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah/store' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'store',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah/edit' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'edit',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah/edit' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'edit',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah/update' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'update',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah/update' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'update',
+        'middleware' => ['AuthMiddleware']
+    ],
 
-'/matakuliah/delete' => [
-    'controller' => 'MataKuliahController',
-    'action' => 'destroy',
-    'middleware' => ['AuthMiddleware']
-],
+    '/matakuliah/delete' => [
+        'controller' => 'MataKuliahController',
+        'action' => 'destroy',
+        'middleware' => ['AuthMiddleware']
+    ],
 
     '/logout' => [
         'controller' => 'AuthController',
